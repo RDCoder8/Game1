@@ -28,3 +28,29 @@ let monster = {
 }
 
 let monstersCaught = 0
+
+// Handle keyboard controls
+
+let keysDown = {}
+
+//keyCode is deprecrated and needs to be changed to KeyboardEvent.code
+addEventListener("keydown", function (e) {
+	keysDown[e.keyCode] = true;
+}, false);
+
+addEventListener("keyup", function (e) {
+	delete keysDown[e.keyCode];
+}, false);
+
+//Reset the game when the player catches a monster
+const reset = function () {
+    hero.x = canvas.width / 2
+    hero.y = canvas.height / 2
+
+    //Place a monster on the screen somewhere randomly
+    monster.x = 32 + (Math.random() * (canvas.width - 64))
+    monster.y = 32 + (Math.random() * (canvas.height - 64))
+}
+
+
+
