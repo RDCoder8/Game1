@@ -15,6 +15,24 @@ bgImage.onload = function() {
 
 bgImage.src = "images/background.png"
 
+// Hero image
+let heroReady = false
+let heroImage = new Image()
+heroImage.onload = function() {
+	heroReady = true
+}
+
+heroImage.src = "images/hero.png"
+
+// Hero image
+let monsterReady = false
+let monsterImage = new Image()
+monsterImage.onload = function() {
+	monsterReady = true
+}
+
+monsterImage.src = "images/monster.png"
+
 // Game Objects
 let hero = {
     speed: 256, //movement in pixels per second
@@ -35,11 +53,11 @@ let keysDown = {}
 
 //keyCode is deprecrated and needs to be changed to KeyboardEvent.code
 addEventListener("keydown", function (e) {
-	keysDown[e.keyCode] = true;
+	keysDown[e.code] = true;
 }, false);
 
 addEventListener("keyup", function (e) {
-	delete keysDown[e.keyCode];
+	delete keysDown[e.code];
 }, false);
 
 //Reset the game when the player catches a monster
@@ -54,16 +72,16 @@ const reset = function () {
 
 // Update game objects
 const update = function (modifier) {
-	if (38 in keysDown) { // Player holding up
+	if ('ArrowUp' in keysDown) { // Player holding up
 		hero.y -= hero.speed * modifier;
 	}
-	if (40 in keysDown) { // Player holding down
+	if ('ArrowDown' in keysDown) { // Player holding down
 		hero.y += hero.speed * modifier;
 	}
-	if (37 in keysDown) { // Player holding left
+	if ('ArrowLeft' in keysDown) { // Player holding left
 		hero.x -= hero.speed * modifier;
 	}
-	if (39 in keysDown) { // Player holding right
+	if ('ArrowRight' in keysDown) { // Player holding right
 		hero.x += hero.speed * modifier;
 	}
 
@@ -79,3 +97,47 @@ const update = function (modifier) {
 	}
 };
 
+// Draw everything
+const render = function () {
+	if (bgReady) {
+		ctx.drawImage(bgImage, 0, 0);
+	}
+
+	if (heroReady) {
+		ctx.drawImage(heroImage, hero.x, hero.y);
+	}
+
+	if (monsterReady) {
+		ctx.drawImage(monsterImage, monster.x, monster.y);
+	}
+
+	// Score
+	ctx.fillStyle = "rgb(250, 250, 250)";
+	ctx.font = "24px Helvetica";
+	ctx.textAlign = "left";
+	ctx.textBaseline = "top";
+	ctx.fillText("Monsters caught: " + monstersCaught, 32, 32);
+};
+
+// The main game loop
+const main = function () {
+	let now = Date.now();
+	let delta = now - then;
+
+	update(delta / 1000);
+	render();
+
+	then = now;
+
+	// Request to do this again ASAP
+	requestAnimationFrame(main);
+};
+
+// Cross-browser support for requestAnimationFrame
+var w = window;
+requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+
+// Let's play this game!
+var then = Date.now();
+reset();
+main();
